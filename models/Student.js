@@ -25,15 +25,21 @@ const ifExists = async function(email) {
 const StudentSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        minlength: 2,
+        trim: true
     },
     first_name: {
         type: String,
-        required: true
+        required: true,
+        minlength: 2,
+        trim: true
+
     },
     email: {
         type: String,
         required: true,
+        trim: true,
         validate: emailValidators
     }
 });
