@@ -26,19 +26,21 @@ studentRouter.get("/id/:id", async (req, res) => {
     } 
 })
 
-
-
 studentRouter.post("/", async (req, res) => {
+    const {name, first_name, email} = req.body;
     try {
-      const {name, first_name, email} = req.body;
       const response = await Student.create({name, first_name, email});
+      res.status(201).json(response);
 
-     res.status(201).json({message: "Student account created", details: response})
-     
     } catch(err){
-        res.status(500).json(err)
+        console.log(err)
+        if (err.code === 11000 && err.keyPattern && err.keyPattern.email) {
+            return res.status(400).json({ error: 'Email already exists.' });
+        }
+        return res.status(500).json(err)
     }
 })
+
 
 
 
@@ -61,24 +63,26 @@ studentRouter.put("/name/:name", async (req, res) => {
 })
 
 
-// by using runValidators: true  validation makes an error because of the  email - it says it already exists 
-// FIND a way to resolve this problem
-
 studentRouter.put("/id/:id", async (req, res) => {
     const {name, first_name, email} = req.body;
     const {id} = req.params;
     const opts = { runValidators: true };
+
+
     try {      
         const response = await Student.findByIdAndUpdate(id, {name, first_name, email}, opts);
         if (response === null) {
             res.status(404).json({message: `Student with ID ${id} doesn't exist`})
         }
-        const updated = await Student.findByIdAndUpdate(id);
+        const updated = await Student.findById(id);
         res.status(201).json({message:"Data changed successfully", data: updated})
 
     } catch(err){
         console.log(err)
-        res.status(500).json(err)
+        if (err.code === 11000 && err.keyPattern && err.keyPattern.email) {
+            return res.status(400).json({ error: 'Email already exists.' });
+        }
+        return res.status(500).json(err)
     }
 })
 

@@ -1,5 +1,6 @@
 import mongoose from "mongoose"; 
 
+// const emailRegex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
 
 const ifExists = async function(email) {
     const user = await this.constructor.findOne({ email });
@@ -38,9 +39,15 @@ const StudentSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true,
+        required: [true, "Email required"],
         trim: true,
-        validate: emailValidators
+        unique: true,
+        // validate: {
+        //     validator: email => emailRegex.test(email),
+        //     message: props => `${props.value} is not a valid email address!`
+        // },
+        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address'],
+        // validate: emailValidators
     }
 });
 
