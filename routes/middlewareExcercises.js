@@ -46,8 +46,8 @@ studentsRouter.post("/", middlewareAuthorizationFunction, async (req, res) => {
 const middlewareErrorFunction = (err, req, res, next) => {
     //Perform some action on the request or response
     console.log(err);
-    const statusCode = err.statusCode;
-    const statusMessage = err.message;
+    const statusCode = err.statusCode || 500;
+    const statusMessage = err.message || "Internal server error";
     res.status(statusCode).json({error: statusMessage})
 }
 
@@ -66,7 +66,8 @@ studentsRouter.put('/:name', middlewareAuthorizationFunction, async (req, res, n
         }
     } catch (err) {
         console.log(err)
-        res.status(500).send(err);
+        return next()
+
     }
 }, middlewareErrorFunction);
 
